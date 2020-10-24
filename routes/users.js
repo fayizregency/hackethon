@@ -52,24 +52,21 @@ router.post('/login',(req,res)=>{
 router.get('/personal',(req,res)=>{
 
   db.get().collection('questions').find({category:'personal'}).toArray((err,data)=>{
-    // console.log(data);
     res.render('qpageone',{data:data})
-   
     })
      });
 
- router.post('/personal_submit',(req,res)=>{
-   const value = req.body.value;
-  //  console.log(req.body.value);
-   if( value == 'answer0'){
-
-    score++;
-    
-  }else if(value == 'answer1'){
-
-    score++;
-  }
-  console.log(score);
+ router.post('/personal_submit',async(req,res)=>{
+   console.log(req.body);
+  await db.get().collection('questions').find({category:'personal'}).toArray((err,datas)=>{
+        datas.forEach((data)=>{
+          if(data.answer == req.body._id){
+            score++;
+          }
+        })
+    })
+    console.log(score);
+  
   })    
 
 
