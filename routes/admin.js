@@ -13,16 +13,19 @@ router.get('/add_question',(req,res)=>{
 });
 
 router.post('/add_question',(req,res)=>{
-  const {category,question,option1,option2,option3,option4} =req.body
+  console.log(req.body);
+  const {category,question,option1,option2,option3,option4,answer} =req.body
   console.log(req.body);
 
   db.get().collection('questions').insertOne({
     question:req.body.question,
+    number : req.body.num,
     option1:req.body.option1,
     option2:req.body.option2,
     option3:req.body.option3,
     option4:req.body.option4,
-    category:req.body.category
+    category:req.body.category,
+    answer : req.body.answer
   }).then(()=>{
     res.json("question added")
   }).catch((err)=>{
