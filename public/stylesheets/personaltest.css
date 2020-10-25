@@ -1,0 +1,80 @@
+/*!
+ * Start Bootstrap - Heroic Features (https://startbootstrap.com/templates/heroic-features)
+ * Copyright 2013-2020 Start Bootstrap
+ * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-heroic-features/blob/master/LICENSE)
+ */
+html{
+  scroll-behavior: smooth;
+}
+body {
+  padding-top: 56px;
+}
+.icon-image{
+  height: 110px;
+}
+.row{
+  display: flex;
+  justify-content: center;
+}
+.jumbotron {
+  font-size: 2.5rem;
+  text-align: center;
+}
+.jumbotron h1{
+  font-size: 4rem;
+  font-family: sans-serif;
+  text-align: center;
+}
+.jumbotron p{
+  font-size: 1.5rem;
+    font-family: cursive;
+    text-align: center;
+}
+
+.questions{
+  display: flex;
+  flex-direction: column;
+  background-color: gainsboro;
+  
+}
+.question{
+  margin-left: 0rem;
+
+}
+.question ul{
+  margin-left: 20rem;
+  margin-top: 30px;
+  margin-bottom: 25px;
+}
+.question h5{
+  margin-top: 2rem;
+  text-align: center;
+}
+.radio{
+  position: inherit;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color:chocolate;
+  border-radius: 50%;
+  margin-left: 10px;
+}
+.agree{
+  font-size: 22px;
+  color: green;
+  font-family: cursive;
+}
+.Disagree{
+  font-size: 22px;
+  color: rgb(197, 53, 77);
+  font-family: cursive;
+}
+.button{
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+.button button{
+  width: -webkit-fill-available;
+}

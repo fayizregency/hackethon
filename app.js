@@ -7,6 +7,7 @@ var db = require('./config/connection');
 var hbs =require('express-handlebars');
 var userRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
+var session = require('express-session');
 
 var app = express();
 
@@ -22,14 +23,37 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret:'ok',
+  name:'userCookie',
+  resave:false,
+  saveUninitialized:false,
+  cookie:
+  {
+    maxAge:100000000,
+    path:'/'
+  }
+}));
+
+// app.use(session({
+//   secret:'ok',
+//   resave:false,
+//   saveUninitialized:false,
+//   cookie:
+//   {
+//     maxAge:100000000,
+//     path:'/admin'
+//   }
+// }));
+
 
 db.connect((err)=>{
   if(err) console.log(err);
   else console.log('connected successfully');
 });
 
-app.use('/', userRouter);
 app.use('/admin', adminRouter);
+app.use('/', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

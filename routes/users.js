@@ -3,6 +3,7 @@ var express = require('express');
 var shuffle = require('shuffle-array');
 var router = express.Router();
 var db = require('../config/connection');
+var objectId= require('mongodb').ObjectId
 var axios = require('axios');
 /* GET home page. */
 
@@ -13,10 +14,11 @@ router.get('/signup', (req, res) => {
 
 router.post('/signup', (req, res) => {
   const { username, email, password } = req.body
+  console.log(req.body);
   db.get().collection('users').insertOne({
     username: req.body.username,
     email: req.body.email,
-    password: req.body.password
+    password: req.body.pass
   }).then(() => {
     res.render('UserLogin');
   }).catch((err) => {
@@ -41,28 +43,38 @@ router.post('/login', (req, res) => {
   }, (err, data) => {
 
     if (data) {
-      res.send('home');
+      var email = data.email;
+      req.session.loggedIn =true;
+      req.session.email = email
+      res.render('userHome');
     } else {
-      res.send('err')
+      res.render('UserLogin');
     }
   });
 });
 
+router.get('/categories',(req,res)=>{
+  res.render('userQuestions');
+})
 
-router.get('/personal', (req, res) => {
+router.get("/personaltest", (req, res) => {
+  res.render("personaltest")
+})
 
-  db.get().collection('questions').find({ category: 'personal' }).toArray((err, data) => {
+router.get('/bussiness', (req, res) => {
+
+  db.get().collection('questions').find({ category: 'bussiness' }).toArray((err, data) => {
     res.render('qpageone', { data: data })
   })
 });
 
-router.post('/personal_submit', async (req, res) => {
+router.post('/bussiness_submit', async (req, res) => {
   let score = 0;
   let answers = new Array;
   let result = Object.values(req.body)
   function getAnswer(){
     return new Promise(async(resolve,reject)=>{
-      await db.get().collection('questions').find({ category: 'personal' }).toArray((err, datas) => {
+      await db.get().collection('questions').find({ category: 'bussiness' }).toArray((err, datas) => {
         datas.forEach(data =>{
           answers.push(data.answer)
         })
@@ -74,9 +86,16 @@ router.post('/personal_submit', async (req, res) => {
   getAnswer().then(()=>{
     for(let i = 0; i< answers.length ; i++){
       if(answers[i] == result[i]){
+
+        console.log(answers);
+        console.log(result);
         score ++;
       }
     }
+    db.get().collection('users').updateOne({email:req.session.email},{$set:{score:score}})
+    .then(()=>{
+      res.redirect('/validation');
+    })
     console.log(score);
   })
   
@@ -84,61 +103,160 @@ router.post('/personal_submit', async (req, res) => {
 
 
 
-router.get('/bussiness', (req, res) => {
+router.get('/marketing', (req, res) => {
 
-  db.get().collection('questions').find({ category: 'bussiness' }).toArray((err, data) => {
+  db.get().collection('questions').find({ category: 'marketing' }).toArray((err, data) => {
     if (err) res.json(err)
 
-    // for(let i=0;i<data.length;i++){
-    //   array.push([data[i].option1,
-    //     data[i].option2,data[i].option3,data[i].option4])
-    //    var sheffled= shuffle(array[i]);
-    //     console.log('shuffled:'+sheffled);
-    // }
-
-
-    // console.log();
-    // console.log(array);
-    res.json('got all bussiness questions');
+        res.render('qpageFour',{data:data})
   })
 
+})
+
+router.post('/marketing_submit', async (req, res) => {
+  let score = 0;
+  let answers = new Array;
+  let result = Object.values(req.body)
+  function getAnswer(){
+    return new Promise(async(resolve,reject)=>{
+      await db.get().collection('questions').find({ category: 'marketing' }).toArray((err, datas) => {
+        datas.forEach(data =>{
+          answers.push(data.answer)
+        })
+        resolve()
+      })
+     
+    })
+  }
+  getAnswer().then(()=>{
+    for(let i = 0; i< answers.length ; i++){
+      if(answers[i] == result[i]){
+
+        console.log(answers);
+        console.log(result);
+        score ++;
+      }
+    }
+    db.get().collection('users').updateOne({email:req.session.email},{$set:{score:score}})
+    .then(()=>{
+      res.redirect('/validation')
+    })
+    console.log(score);
+  })
+  
 })
 
 router.get('/tech', (req, res) => {
-  db.get().collection('questions').find({ category: 'tech' }, (err, data) => {
+  db.get().collection('questions').find({ category: 'tech' }).toArray((err, data) => {
     if (err) res.json(err)
-    res.json('got all tech questions');
+    console.log(data);
+    res.render('qpageTwo',{data:data});
   })
 
+})
+
+router.post('/tech_submit', async (req, res) => {
+  let score = 0;
+  let answers = new Array;
+  let result = Object.values(req.body)
+  function getAnswer(){
+    return new Promise(async(resolve,reject)=>{
+      await db.get().collection('questions').find({ category: 'tech' }).toArray((err, datas) => {
+        datas.forEach(data =>{
+          answers.push(data.answer)
+        })
+        resolve()
+      })
+     
+    })
+  }
+  getAnswer().then(()=>{
+    for(let i = 0; i< answers.length ; i++){
+      if(answers[i] == result[i]){
+
+        console.log(answers);
+        console.log(result);
+        score ++;
+      }
+    }
+    db.get().collection('users').updateOne({email:req.session.email},{$set:{score:score}})
+    .then(()=>{
+      res.redirect('/validation');
+    })
+    console.log(score);
+  })
+  
 })
 
 router.get('/social', (req, res) => {
-  db.get().collection('questions').find({ category: 'social' }, (err, data) => {
+  db.get().collection('questions').find({ category: 'social' }).toArray((err, data) => {
     if (err) res.json(err)
-    res.json('got all social questions');
+    res.render('qpageThree',{data:data})
   })
 
 })
 
-router.get('/marketing', (req, res) => {
-  db.get().collection('questions').find({ category: 'marketing' }, (err, data) => {
-    if (err) res.json(err)
-    res.json(data);
-  })
-
-});
-
-
-
-router.post('/validate_bussiness', (req, res) => {
-  const { answer } = req.body.answer
-  if (answer === 'option1') {
-    score++;
+router.post('/social_submit', async (req, res) => {
+  let score = 0;
+  let answers = new Array;
+  let result = Object.values(req.body)
+  function getAnswer(){
+    return new Promise(async(resolve,reject)=>{
+      await db.get().collection('questions').find({ category: 'socail' }).toArray((err, datas) => {
+        datas.forEach(data =>{
+          answers.push(data.answer)
+        })
+        resolve()
+      })
+     
+    })
   }
-  res.json('1 qestion completed');
+  getAnswer().then(()=>{
+    for(let i = 0; i< answers.length ; i++){
+      if(answers[i] == result[i]){
+
+        console.log(answers);
+        console.log(result);
+        score ++;
+      }
+    }
+    db.get().collection('users').updateOne({email:req.session.email},{$set:{score:score}})
+    .then((res)=>{
+      console.log(res);
+    })
+    res.redirect('/validation');
+    console.log(score);
+  })
+  
+})
+
+router.get('/logout',(req,res)=>{
+  req.session.destroy();
+  res.redirect('/');
 });
 
-router.post('/')
+
+router.get('/validation',(req,res)=>{
+  let poor =false;
+  let average=false;
+  let good= false;
+
+  db.get().collection('users').findOne({email:req.session.email})
+  .then((data)=>{
+    console.log(data);
+    if(data.score <3){
+      poor=true;
+
+    }else if(data.score <=4 && data.score >=3){
+      average=true;
+    }else{
+      good=true;
+    }
+    res.render('result',{poor,average,good});
+  }).catch((err)=>{
+    res.send(err);
+  })
+})
 
 
 
